@@ -1,0 +1,31 @@
+common: &common
+  policies:
+    logs:
+      action:
+        - logs:PutLogEvents
+        - logs:DescribeLogStreams
+        - logs:DescribeLogGroups
+      resource:
+        - '*'
+  log_retention: 7
+  create_log_group: false
+
+lambdas:
+  distribution:
+    bucket:
+      Fn::Sub: ${S3Bucket}
+    prefix: ${S3Prefix}
+
+  functions:
+    GetAmi:
+      handler: get_ami/handler.lambda_handler
+      runtime: python3.6
+      code_uri: ${LambdaFunctionsVersion}/src.zip
+      timeout: 30
+      <<: *common
+    HelloWorld:
+      handler: hello_world/handler.lambda_handler
+      runtime: python3.6
+      code_uri: ${LambdaFunctionsVersion}/src.zip
+      timeout: 30
+      <<: *common
