@@ -19,6 +19,12 @@ CfhighlanderTemplate do
     parameter name: 'DynamoDbTableName', value: cfout('dynamodb', 'TableName')
   end
 
+  Component name: 's3events', template: 's3_events', config: s3_events do
+    parameter name: 'S3Bucket', value: Ref('S3Bucket')
+    parameter name: 'PutAmiFunctionArn',   value: cfout('lambda', 'PutAmiArn')
+    parameter name: 'S3EventsFunctionArn', value: cfout('lambda', 'S3EventsArn')
+  end
+
   Component name: 'httpapi', template: 'api-gateway-v2' do
     parameter name: 'GetAmiFunctionArn', value: cfout('lambda', 'GetAmiArn')
   end

@@ -7,6 +7,8 @@ common: &common_lambda
 common_logs: &common_logs
   logs:
     action:
+      - logs:CreateLogGroup
+      - logs:CreateLogStream
       - logs:PutLogEvents
       - logs:DescribeLogStreams
       - logs:DescribeLogGroups
@@ -57,5 +59,32 @@ lambdas:
       policies:
         <<: *common_logs
 
+    S3Events:
+      handler: s3_events/handler.lambda_handler
+      code_uri: ${LambdaFunctionsVersion}/src.zip
+      environment:
+        ENVIRONMENT: ${EnvironmentName}
+      <<: *common_lambda
+      policies:
+        <<: *common_logs
+        s3-events:
+          action:
+            - s3:GetBucketNotification
+            - s3:PutBucketNotification
+            - lambda:AddPermission
+            - lambda:GetPolicy
+            - lambda:RemovePermission
+          resource:
+            - '*'
+
 dynamodb:
   table_name: amis
+
+s3_events:
+  notifications:
+    PackerBuilds:
+      enabled: true
+      bucket: ${S3Bucket}
+      function: ${PutAmiFunctionArn}
+      prefix: packer-builds/
+      suffix: build.zip
