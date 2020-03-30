@@ -18,7 +18,7 @@ CloudFormation do
 
     Output('TableName') do
         Value(table_name)
-        Export(FnSub("${EnvironmentName}-DynamoDb-TableName"))
+        Export(FnSub("${AWS::StackName}-DynamoDb-TableName"))
     end
 end
 

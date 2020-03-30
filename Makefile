@@ -53,7 +53,7 @@ status:
 		--query 'Stacks[0].{Name:StackName,Status:StackStatus,LastUpdated:LastUpdatedTime}'
 
 init-db:
-	aws dynamodb put-item --table-name ${TABLE_NAME} --item '{"id": {"S": "unknown"}}'
+	aws dynamodb put-item --table-name ${AWS_APPLICATION} --item '{"id": {"S": "unknown"}}'
 
 clean:
 	rm -rf *.json* envvars functions.version src.zip out
