@@ -11,6 +11,7 @@ VERSION 	:= $(GIT_BRANCH)-$(GIT_COMMIT)
 #_PARAM_StackParam2=No
 PARAMS := $(foreach v, $(filter _PARAM_%,$(.VARIABLES)), $(v)=$($(v)))
 
+create: clean lambda-package generate-parameters cfn-package
 
 update: clean lambda-package generate-parameters cfn-package cfn-update status
 
