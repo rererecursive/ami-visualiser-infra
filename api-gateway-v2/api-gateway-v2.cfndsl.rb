@@ -70,7 +70,7 @@ CloudFormation do
 
     Output('ApiUrl') do
         Value(FnSub('https://${Api}.execute-api.${AWS::Region}.amazonaws.com'))
-        Export(FnSub("${EnvironmentName}-ApiUrl"))
+        Export(FnSub("${EnvironmentName}-ApiGateway-ApiUrl"))
     end
 
 end

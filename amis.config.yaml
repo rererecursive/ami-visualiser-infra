@@ -1,31 +1,61 @@
-common: &common
-  policies:
-    logs:
-      action:
-        - logs:PutLogEvents
-        - logs:DescribeLogStreams
-        - logs:DescribeLogGroups
-      resource:
-        - '*'
-  log_retention: 7
+common: &common_lambda
   create_log_group: false
+  log_retention: 7
+  runtime: python3.6
+  timeout: 30
+
+common_logs: &common_logs
+  logs:
+    action:
+      - logs:PutLogEvents
+      - logs:DescribeLogStreams
+      - logs:DescribeLogGroups
+    resource:
+      - '*'
 
 lambdas:
   distribution:
-    bucket:
-      Fn::Sub: ${S3Bucket}
+    bucket: ${S3Bucket}
     prefix: ${S3Prefix}
 
   functions:
     GetAmi:
       handler: get_ami/handler.lambda_handler
-      runtime: python3.6
       code_uri: ${LambdaFunctionsVersion}/src.zip
-      timeout: 30
-      <<: *common
+      environment:
+        TABLE: ${DynamoDbTableName}
+        REGION: ${AWS::Region}
+      <<: *common_lambda
+      policies:
+        <<: *common_logs
+        dynamo:
+          action:
+            - dynamodb:Scan
+          resource:
+            - '*'
+
+    PutAmi:
+      handler: put_ami/handler.lambda_handler
+      code_uri: ${LambdaFunctionsVersion}/src.zip
+      environment:
+        TABLE: ${DynamoDbTableName}
+        REGION: ${AWS::Region}
+      <<: *common_lambda
+      policies:
+        <<: *common_logs
+        dynamo:
+          action:
+            - dynamodb:PutItem
+            - dynamodb:GetItem
+          resource:
+            - '*'
+
     HelloWorld:
       handler: hello_world/handler.lambda_handler
-      runtime: python3.6
       code_uri: ${LambdaFunctionsVersion}/src.zip
-      timeout: 30
-      <<: *common
+      <<: *common_lambda
+      policies:
+        <<: *common_logs
+
+dynamodb:
+  table_name: amis

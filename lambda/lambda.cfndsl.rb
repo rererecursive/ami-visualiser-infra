@@ -45,11 +45,11 @@ CloudFormation do
     # Create Lambda function
     Lambda_Function(function_name) do
       Code({
-          S3Bucket: distribution['bucket'],
+          S3Bucket: FnSub(distribution['bucket']),
           S3Key: FnSub("#{distribution['prefix']}/#{lambda_config['code_uri']}")
       })
 
-      Environment(Variables: Hash[environment.collect { |k, v| [k, v] }])
+      Environment(Variables: Hash[environment.collect { |k, v| [k, FnSub(v)] }])
 
       Handler(lambda_config['handler'] || 'index.handler')
       MemorySize(lambda_config['memory'] || 128)

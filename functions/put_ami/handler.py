@@ -1,5 +1,5 @@
 """
-PUT/LOAD:
+PUT:
 
 Extract the necessary information from the files in S3:
     - manifest.json
@@ -9,16 +9,9 @@ Extract the necessary information from the files in S3:
     - produced-ami.json
 and load it into DynamoDB.
 
-Loading will be done via an S3 event which triggers Lambda.
-
-Loading should convert the parent AMI ID to the key ID in Dynamo. This ensures that the data is in a 'purely readable state', requiring no modifications when read.
+This function is triggered by an S3 event.
 """
 
-"""
-GET (API):
-
-Request the data from Dynamo.
-"""
 import json
 import time
 import os
